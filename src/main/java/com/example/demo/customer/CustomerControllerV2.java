@@ -1,6 +1,8 @@
 package com.example.demo.customer;
 
 
+import com.example.demo.BaseSuccessResponse;
+import com.example.demo.exception.ApiRequestException;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,16 +27,24 @@ public class CustomerControllerV2 {
         return customerService.getCustomers();
     }
 
+    @GetMapping(value = "get/exception", params = {"customerId"})
+    Customer getCustomerException(@PathParam("customerId") Long customerId) {
+        throw new ApiRequestException(
+                "ApiRequestException for customer " + customerId, null
+        );
+    }
+
     @GetMapping(value = "get", params = {"customerId"})
-    Customer getCustomer(@PathParam("customerId") Long customerId) {
+    BaseSuccessResponse<Customer> getCustomer(@PathParam("customerId") Long customerId) {
         return customerService.getCustomer(customerId);
     }
 
     @PostMapping
-    void createNewCustomer(@RequestBody Customer customer) {
+    BaseSuccessResponse<Customer> createNewCustomer(@RequestBody Customer customer) {
         System.out.println("POST Request ...");
         System.out.println(customer.getPassword());
         System.out.println(customer);
+        return new BaseSuccessResponse<>("",customer);
     }
 
     @PutMapping
